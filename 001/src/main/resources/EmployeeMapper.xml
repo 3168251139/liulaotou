@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    接口代理方式：
+        namespace:名称空间，该值是mapper接口的全路径-->
+<mapper namespace="cn.bdqn.Mapper">
+
+    <!--  自定义属性映射  -->
+    <resultMap id="EmployeeResultMap" type="cn.bdqn.domain.Employee">
+        <result property="empName" column="emp_name"/>
+    </resultMap>
+
+    <!--
+        查询全部的员工。
+            id：唯一标识,标识映射文件中的sql,将来可以拿着这个唯一的标识进行查询
+            resultType：返回值类型,将数据库查询的结果映射到实体
+    -->
+    <select id="selectAllEmployees" resultType="cn.bdqn.domain.Employee" resultMap="EmployeeResultMap">
+        select
+               id,emp_name,sex,email,birthday,address
+        from
+               t_employee
+    </select>
+    <!--
+       根据员工id查询员工
+           parameterType: 指定输入参数的类型。
+           #{}:表示一个占位符号,id表示的是接收的参数值。
+   -->
+    <select id="selectById" parameterType="int" resultType="cn.bdqn.domain.Employee">
+       select
+              id,emp_name empName,sex,email,birthday,address
+       from
+              t_employee
+       where
+              id = #{id}
+    </select>
+    <!-- 模糊查询1-->
+    <select id="selectByName" resultType="cn.bdqn.domain.Employee">
+   	select
+  		id,emp_name empName,sex,email,birthday,address
+  	from
+  		t_employee
+  	where
+  		emp_name like #{empName}
+    </select>
+    <!-- 模糊查询2-->
+    <select id="selectByName_2"	resultType="cn.bdqn.domain.Employee">
+   select
+  		id,emp_name empName,sex,email,birthday,address
+   from
+  		t_employee
+   where
+  		emp_name like '%${empName}%'
+   </select>
+    <!-- 模糊查询3-->
+    <select id="selectByName_3"	resultType="cn.bdqn.domain.Employee">
+    select
+       	id,emp_name empName,sex,email,birthday,address
+    from
+        t_employee
+    where
+        emp_name like concat('%',#{empName},'%')
+   </select>
+    <!-- 模糊查询4-->
+    <select id="selectByName_4" resultType="cn.bdqn.domain.Employee">
+   select
+        id,emp_name empName,sex,email,birthday,address
+   from
+        t_employee
+   where
+        emp_name like concat('%','${empName}','%')
+  </select>
+    <!-- 添加员工   -->
+    <insert id="insert" parameterType="cn.bdqn.domain.Employee">
+   	insert into
+        t_employee(emp_name,sex,email,birthday,address)
+    values
+        (#{empName},#{sex},#{email},#{birthday},#{address})
+</insert>
+    <!-- 添加员工返回自增主键id   -->
+    <insert id="insertReturnPrimaryKey_1" parameterType="cn.bdqn.domain.Employee">
+        <selectKey keyProperty="id" keyColumn="id" order="AFTER" resultType="java.lang.Integer">
+            select LAST_INSERT_ID()
+        </selectKey>
+
+        insert into
+        t_employee(emp_name,sex,email,birthday,address)
+        values
+        (#{empName},#{sex},#{email},#{birthday},#{address})
+    </insert>
+    <!-- 添加员工返回自增主键id   -->
+    <insert id="insertReturnPrimaryKey_2"
+            useGeneratedKeys="true"
+            keyProperty="id"
+            keyColumn="id"
+            parameterType="cn.bdqn.domain.Employee">
+     insert into
+        t_employee(emp_name,sex,email,birthday,address)
+  	 values
+        (#{empName},#{sex},#{email},#{birthday},#{address})
+     </insert>
+    <!--  根据id删除员工  -->
+    <delete id="deleteById">
+    delete from t_employee where id = #{id}
+  </delete>
+    <!--  更新员工  -->
+    <update id="updateById" parameterType="cn.bdqn.domain.Employee">
+        update
+            t_employee
+        set
+            emp_name = #{empName},
+            address = #{address}
+        where
+            id = #{id}
+</update>
+    <!--    根据员工id查询员工  -->
+    <select id="queryById" parameterType="int" resultType="Employee">
+       select
+               id,emp_name empName,sex,email,birthday,address
+         from
+              t_employee
+        where
+              id = #{id}
+    </select>
+
+    <!--    添加员工   -->
+    <insert id="save" parameterType="cn.bdqn.domain.Employee">
+        insert into
+            t_employee(emp_name,sex,email,birthday,address)
+        values
+            (#{empName},#{sex},#{email},#{birthday},#{address})
+    </insert>
+</mapper>
